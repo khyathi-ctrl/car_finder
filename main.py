@@ -15,7 +15,7 @@ def get_user_requirements():
 def save_results(cars):
     choice = input("\nSave results to file? (yes/no): ")
     if choice.lower() == "yes":
-        with open("saved_cars.txt", "a") as file:
+        with open("saved_cars.txt", "a", encoding="utf-8") as file:
             for car in cars:
                 file.write(f"{car.make} {car.model} ({car.year}) - ₹{car.price:,} - {car.fuel} - {car.mileage} km/l\n")
         print("Saved to saved_cars.txt!")
