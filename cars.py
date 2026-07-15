@@ -38,7 +38,10 @@ def load_cars():
     df["km_driven"] = df["km_driven"].apply(clean_km)
 
     df = df[["make", "model", "year", "fuel", "price", "km_driven", "transmission", "owner"]]
-    df = df.dropna()
+    df = df.dropna(subset=["make", "model", "year", "fuel", "price", "km_driven", "transmission", "owner"])
+    df = df[df["transmission"].str.strip() != ""]
+    df = df[df["owner"].str.strip() != ""]
+    df = df[df["fuel"].str.strip() != ""]
 
     df = df[df["price"] > 0]
     df = df[df["km_driven"] > 0]
