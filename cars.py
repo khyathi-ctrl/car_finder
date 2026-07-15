@@ -1,15 +1,48 @@
-cars = [
-    {"make": "Toyota", "model": "Camry", "year": 2020, "fuel": "Petrol", "price": 800000, "mileage": 15},
-    {"make": "Honda", "model": "City", "year": 2019, "fuel": "Diesel", "price": 650000, "mileage": 18},
-    {"make": "Hyundai", "model": "Creta", "year": 2022, "fuel": "Petrol", "price": 1200000, "mileage": 14},
-    {"make": "Tata", "model": "Nexon", "year": 2021, "fuel": "Electric", "price": 1400000, "mileage": 30},
-    {"make": "Maruti", "model": "Swift", "year": 2023, "fuel": "Petrol", "price": 550000, "mileage": 20},
-    {"make": "Kia", "model": "Seltos", "year": 2022, "fuel": "Diesel", "price": 1100000, "mileage": 16},
-    {"make": "MG", "model": "Hector", "year": 2021, "fuel": "Petrol", "price": 1300000, "mileage": 13},
-    {"make": "Mahindra", "model": "XUV700", "year": 2023, "fuel": "Diesel", "price": 1500000, "mileage": 15},
-    {"make": "Maruti", "model": "Baleno", "year": 2022, "fuel": "Petrol", "price": 650000, "mileage": 22},
-{"make": "Hyundai", "model": "i20", "year": 2023, "fuel": "Petrol", "price": 750000, "mileage": 20},
-{"make": "Toyota", "model": "Fortuner", "year": 2022, "fuel": "Diesel", "price": 3500000, "mileage": 10},
-{"make": "Tata", "model": "Punch", "year": 2023, "fuel": "Petrol", "price": 600000, "mileage": 18},
-{"make": "Hyundai", "model": "Verna", "year": 2023, "fuel": "Petrol", "price": 1100000, "mileage": 17},
-]
+import pandas as pd
+
+def clean_price(price):
+    try:
+        price = str(price)
+        price = price.replace("₹", "").replace(",", "").strip()
+        return int(float(price))
+    except:
+        return None
+
+def clean_km(km):
+    try:
+        km = str(km)
+        km = km.replace(",", "").replace("km", "").strip()
+        return int(float(km))
+    except:
+        return None
+
+def load_cars():
+    df1 = pd.read_csv("used_car_dataset.csv")
+    df2 = pd.read_csv("used_cars_dataset_v2.csv")
+
+    df = pd.concat([df1, df2], ignore_index=True)
+    df = df.drop_duplicates()
+
+    df = df.rename(columns={
+        "Brand": "make",
+        "model": "model",
+        "Year": "year",
+        "FuelType": "fuel",
+        "AskPrice": "price",
+        "kmDriven": "km_driven",
+        "Transmission": "transmission",
+        "Owner": "owner"
+    })
+
+    df["price"] = df["price"].apply(clean_price)
+    df["km_driven"] = df["km_driven"].apply(clean_km)
+
+    df = df[["make", "model", "year", "fuel", "price", "km_driven", "transmission", "owner"]]
+    df = df.dropna()
+
+    df = df[df["price"] > 0]
+    df = df[df["km_driven"] > 0]
+
+    return df.to_dict(orient="records")
+
+cars = load_cars()
